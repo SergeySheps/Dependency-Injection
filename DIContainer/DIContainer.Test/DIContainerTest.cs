@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace DIContainer.Test
 {
     [TestClass]
-    public class UnitTest1
+    public class DIContainerTest
     {
         [TestMethod]
         public void TestMethod1()
