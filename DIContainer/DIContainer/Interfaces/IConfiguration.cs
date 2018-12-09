@@ -2,9 +2,9 @@
 {
     public interface IConfiguration
     {
-        void Register<TImplementation>() where TImplementation : class;
+        RegisteredType Register<TImplementation>() where TImplementation : class;
 
-        void Register<TDependency, TImplementation>()
+        RegisteredType Register<TDependency, TImplementation>()
            where TDependency : class
            where TImplementation : TDependency;
     }
