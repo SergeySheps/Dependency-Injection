@@ -11,10 +11,23 @@ namespace DIContainer.Implementations
         private readonly Dictionary<Type, ICollection<RegisteredType>> container =
             new Dictionary<Type, ICollection<RegisteredType>>();
 
+        public RegisteredType GetRegisteredType(Type type)
+        {
+            return container.TryGetValue(type, out var registeredTypes)
+                ? registeredTypes.FirstOrDefault()
+                : null;
+        }
+
+        public IEnumerable<RegisteredType> GetRegisteredTypes(Type type)
+        {
+            return container.TryGetValue(type, out var registeredTypes) ? registeredTypes : null;
+        }
+
         public RegisteredType Register<TImplementation>() where TImplementation : class
         {
             return RegisterType(typeof(TImplementation), typeof(TImplementation));
         }
+
         public RegisteredType Register<TDependency, TImplementation>()
            where TDependency : class
            where TImplementation : TDependency
