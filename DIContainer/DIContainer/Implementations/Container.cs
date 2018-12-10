@@ -39,7 +39,7 @@ namespace DIContainer.Implementations
 
             if (registeredType != null)
             {
-                return GetInstance<TDependency>(registeredType);
+                return (TDependency)GetInstance(type,registeredType);
             }
 
             throw new Exception($"Not registered type {type.FullName}"); ;
@@ -66,27 +66,18 @@ namespace DIContainer.Implementations
             return (TDependency)collection;
         }
 
-        private TDependency GetInstance<TDependency>(RegisteredType registeredType)
+        private object GetInstance(Type type, RegisteredType registeredType)
         {
-            var type = typeof(TDependency);
-
-            if (type.IsValueType)
+            if (registeredType.DependencyTTL == DependencyTTL.Singleton &&
+                registeredType.Instance != null)
             {
-                return Activator.CreateInstance<TDependency>();
+                return registeredType.Instance;
             }
 
-            if (registeredType.DependencyTTL == DependencyTTL.Singleton)
-            {
-                if (registeredType.Implementation != null)
-                {
-                    return (TDependency)registeredType.Implementation;
-                }
-            }
-
-            return (TDependency)GetInstance(type, registeredType);
+            return CreateInstance(type, registeredType);
         }
 
-        private object GetInstance(Type type, RegisteredType registeredType)
+        private object CreateInstance(Type type, RegisteredType registeredType)
         {
             if (stack.Contains(type))
             {
@@ -95,16 +86,18 @@ namespace DIContainer.Implementations
 
             stack.Push(type);
 
-            var constructor = type.GetConstructors()
-                               .OrderByDescending(x => x.GetParameters().Length)
-                               .FirstOrDefault();
+            var instanceType = registeredType.Implementation;
+
+            var constructor = instanceType.GetConstructors()
+                                .OrderByDescending(x => x.GetParameters().Length)
+                                .FirstOrDefault();
 
             var parameters = GetConstructorParameters(constructor);
+            registeredType.Instance = Activator.CreateInstance(instanceType, parameters);
 
-            registeredType.Implementation = Activator.CreateInstance(type, parameters);
             stack.Pop();
 
-            return registeredType.Implementation;
+            return registeredType.Instance;
         }
 
         private object[] GetConstructorParameters(ConstructorInfo constructor)
@@ -116,8 +109,9 @@ namespace DIContainer.Implementations
                 var registeredType = configuration.GetRegisteredType(parameter.ParameterType);
                 if (registeredType == null)
                 {
-                    throw new Exception($"Not registered type {parameter.Name}");
+                    throw new Exception($"Not registered type {parameter.ParameterType.FullName}");
                 }
+
                 parameters.Add(GetInstance(parameter.ParameterType, registeredType));
             }
 

@@ -6,8 +6,9 @@ namespace DIContainer
     {
 
         public Type Dependency { get; set; }
-        public object Implementation { get; set; }
+        public Type Implementation { get; set; }
         public DependencyTTL DependencyTTL { get; set; }
+        public object Instance { get; set; }
 
     }
 }
