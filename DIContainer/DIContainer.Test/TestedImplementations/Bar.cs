@@ -2,8 +2,7 @@
 
 namespace DIContainer.Test.TestedImplementations
 {
-    class TestClass1 : ITest1
+    public class Bar : ITest1
     {
-
     }
 }

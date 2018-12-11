@@ -5,6 +5,8 @@ using DIContainer.Test.TestedDependencies;
 using DIContainer.Test.TestedImplementations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DIContainer.Test
 {
@@ -75,6 +77,38 @@ namespace DIContainer.Test
             {
                 Assert.AreEqual("Circular dependency", e.Message);
             }
+        }
+
+        [TestMethod]
+        public void ImplementationAbstractClass()
+        {
+            var conf = new Configuration();
+            try
+            {
+                conf.Register<ITest1, AbstractClass>();
+
+                Assert.Fail("Implementation class cannot be abstract class");
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual($"{typeof(AbstractClass)} is incorrect implementation type", e.Message);
+            }
+        }
+
+        [TestMethod]
+        public void MultipleRealization()
+        {
+            var conf = new Configuration();
+            conf.Register<ITest1, Bar>();
+            conf.Register<ITest1, TestClass1>();
+
+            var container = new Container(conf);
+
+            var registeredTypes = container.Resolve<IEnumerable<ITest1>>();
+            var expected = 2;
+
+            Assert.AreEqual(expected, registeredTypes.Count());
+
         }
     }
 }

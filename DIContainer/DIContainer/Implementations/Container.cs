@@ -20,10 +20,9 @@ namespace DIContainer.Implementations
 
         public TDependency Resolve<TDependency>() where TDependency : class
         {
-            lock (Sync)
-            {
-                return ResolveType<TDependency>();
-            }
+
+            return ResolveType<TDependency>();
+
         }
 
         private TDependency ResolveType<TDependency>() where TDependency : class
@@ -36,13 +35,17 @@ namespace DIContainer.Implementations
             }
 
             var registeredType = configuration.GetRegisteredType(type);
+            if (registeredType == null && type.IsGenericType)
+            {
+                registeredType = configuration.GetRegisteredType(type.GetGenericTypeDefinition());
+            }
 
             if (registeredType != null)
             {
-                return (TDependency)GetInstance(type,registeredType);
+                return (TDependency)GetInstance(type, registeredType);
             }
 
-            throw new Exception($"Not registered type {type.FullName}"); ;
+            throw new Exception($"Not registered type {type.FullName}");
         }
 
         private TDependency ResolveCollection<TDependency>()
@@ -68,13 +71,22 @@ namespace DIContainer.Implementations
 
         private object GetInstance(Type type, RegisteredType registeredType)
         {
-            if (registeredType.DependencyTTL == DependencyTTL.Singleton &&
-                registeredType.Instance != null)
+
+            if (registeredType.DependencyTTL == DependencyTTL.Singleton && registeredType.Instance != null)
             {
                 return registeredType.Instance;
             }
 
-            return CreateInstance(type, registeredType);
+            lock (Sync)
+            {
+                if (registeredType.DependencyTTL == DependencyTTL.Singleton &&
+                registeredType.Instance != null)
+                {
+                    return registeredType.Instance;
+                }
+
+                return CreateInstance(type, registeredType);
+            }
         }
 
         private object CreateInstance(Type type, RegisteredType registeredType)
