@@ -37,6 +37,10 @@ namespace DIContainer.Implementations
 
         private RegisteredType RegisterType(Type dependencyType, Type implementationType)
         {
+            if (!IsValidImplementationType(implementationType))
+            {
+                throw new Exception($"{implementationType} is incorrect implementation type");
+            }
 
             var registerType = new RegisteredType()
             {
@@ -60,6 +64,11 @@ namespace DIContainer.Implementations
             }
 
             return registerType;
+        }
+
+        private bool IsValidImplementationType(Type implementationType)
+        {
+            return !(implementationType.IsAbstract || implementationType.IsInterface);
         }
 
     }

@@ -81,7 +81,7 @@ namespace DIContainer.Implementations
         {
             if (stack.Contains(type))
             {
-                throw new Exception("circular dependency");
+                throw new Exception("Circular dependency");
             }
 
             stack.Push(type);
@@ -107,6 +107,7 @@ namespace DIContainer.Implementations
             foreach (var parameter in constructor.GetParameters())
             {
                 var registeredType = configuration.GetRegisteredType(parameter.ParameterType);
+
                 if (registeredType == null)
                 {
                     throw new Exception($"Not registered type {parameter.ParameterType.FullName}");
