@@ -110,5 +110,67 @@ namespace DIContainer.Test
             Assert.AreEqual(expected, registeredTypes.Count());
 
         }
+
+        [TestMethod]
+        public void RegisterClassAsSelf()
+        {
+            var conf = new Configuration();
+            conf.Register<ITest1, TestClass1>();
+            conf.Register<ITest2, TestClass2>();
+            conf.Register<ServiceImpl, ServiceImpl>();
+
+            var container = new Container(conf);
+
+            var service = container.Resolve<ServiceImpl>();
+            Assert.IsNotNull(service);
+        }
+
+        [TestMethod]
+        public void RegisterInterfaceAsSelf()
+        {
+
+            var conf = new Configuration();
+            try
+            {
+                conf.Register<ITest1>();
+
+                Assert.Fail("Implementation class cannot be an interface");
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual($"{typeof(ITest1)} is incorrect implementation type", e.Message);
+            }
+        }
+
+        [TestMethod]
+        public void ResolveGenericType()
+        {
+            var conf = new Configuration();
+            conf.Register<ITest1, TestClass1>();
+            conf.Register<ITest2, TestClass2>();
+            conf.Register<IService, ServiceImpl>();
+            conf.Register<IServiceGeneric<IService>, ServiceGeneric<IService>>();
+
+            var container = new Container(conf);
+
+            var serviceGeneric = container.Resolve<IServiceGeneric<IService>>();
+            Assert.IsNotNull(serviceGeneric.Service);
+        }
+
+        [TestMethod]
+        public void ResolveOpenGenericType()
+        {
+            var conf = new Configuration();
+            conf.Register<ITest1, TestClass1>();
+            conf.Register<ITest2, TestClass2>();
+            conf.Register<IService, ServiceImpl>();
+            conf.Register(typeof(IServiceGeneric<>), typeof(ServiceGeneric<>));
+
+            var container = new Container(conf);
+
+            var serviceGeneric = container.Resolve<IServiceGeneric<IService>>();
+            Assert.IsNotNull(serviceGeneric.Service);
+        }
+
     }
 }

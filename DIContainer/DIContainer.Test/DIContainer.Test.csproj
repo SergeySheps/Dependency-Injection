@@ -51,11 +51,15 @@
   <ItemGroup>
     <Compile Include="DIContainerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestedDependencies\IService.cs" />
+    <Compile Include="TestedDependencies\IServiceGeneric.cs" />
     <Compile Include="TestedDependencies\ITest1.cs" />
     <Compile Include="TestedDependencies\ITest2.cs" />
     <Compile Include="TestedImplementations\AbstractClass.cs" />
     <Compile Include="TestedImplementations\Bar.cs" />
     <Compile Include="TestedImplementations\CycleTestClass.cs" />
+    <Compile Include="TestedImplementations\ServiceGeneric.cs" />
+    <Compile Include="TestedImplementations\ServiceImpl.cs" />
     <Compile Include="TestedImplementations\TestClass1.cs" />
     <Compile Include="TestedImplementations\TestClass2.cs" />
   </ItemGroup>

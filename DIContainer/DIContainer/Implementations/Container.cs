@@ -100,6 +100,11 @@ namespace DIContainer.Implementations
 
             var instanceType = registeredType.Implementation;
 
+            if (instanceType.IsGenericTypeDefinition)
+            {
+                instanceType = instanceType.MakeGenericType(type.GenericTypeArguments);
+            }
+
             var constructor = instanceType.GetConstructors()
                                 .OrderByDescending(x => x.GetParameters().Length)
                                 .FirstOrDefault();

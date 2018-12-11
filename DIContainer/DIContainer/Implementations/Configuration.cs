@@ -35,6 +35,11 @@ namespace DIContainer.Implementations
             return RegisterType(typeof(TDependency), typeof(TImplementation));
         }
 
+        public RegisteredType Register(Type dependency, Type implementation)
+        {
+            return RegisterType(dependency, implementation);
+        }
+
         private RegisteredType RegisterType(Type dependencyType, Type implementationType)
         {
             if (!IsValidImplementationType(implementationType))
